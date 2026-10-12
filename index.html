@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Maison Nette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: en-tête marine animé (logo, titre, bulles), bande de confiance, puis forfaits, avant/après, garantie, calculateur, soumission et pied de page. Tout en une colonne sur téléphone, trois colonnes pour les forfaits dès 820 px. */
+:root {
+  --navy: #1D3557; --deep: #12233B; --sky: #3FA7D6; --sky-hi: #5DBDEB; --mist: #D3EAF7;
+  --paper: #F4F7FA; --white: #FFFFFF; --ink: #12233B; --muted: #4C6179; --line: #D8E2EB;
+  --gold: linear-gradient(100deg, #B98A2E, #F3DA8E 35%, #D9AE4C 55%, #F8E7A8 80%, #B98A2E);
+  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --sans: "Figtree", "Avenir Next", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin-inline: auto; padding-inline: max(16px, 5vw); position: relative; }
+h1, h2, h3 { font-family: var(--serif); margin: 0; text-wrap: balance; }
+h2 { font-size: clamp(1.9rem, 6vw, 2.8rem); line-height: 1.1; font-weight: 700; color: var(--navy); }
+h3 { font-size: 1.5rem; font-weight: 700; line-height: 1.15; }
+p { margin: 0; }
+.eyebrow { font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 700; color: var(--sky); }
+.gold-rule { height: 2px; width: 72px; background: var(--gold); border-radius: 2px; margin-block: 14px 0; }
+:focus-visible { outline: 3px solid var(--sky-hi); outline-offset: 3px; }
+
+/* En-tête */
+.hero { position: relative; overflow: hidden; color: var(--white); padding-block: 22px 76px;
+  background: radial-gradient(120% 70% at 78% 0%, #24507C 0%, rgba(36, 80, 124, 0) 62%), var(--deep); }
+.topbar { display: flex; justify-content: flex-end; align-items: center; gap: 12px; position: relative; z-index: 3; }
+.brand { font-family: var(--serif); font-weight: 700; letter-spacing: 0.24em; font-size: 0.95rem; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer; font: inherit; font-weight: 700; text-decoration: none; border-radius: 999px; padding: 14px 26px; color: var(--deep); background: var(--gold); transition: transform .2s ease, box-shadow .2s ease; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(217, 174, 76, 0.35); }
+.btn.sm { padding: 9px 18px; font-size: 0.85rem; }
+.btn.ghost { background: transparent; color: var(--white); border: 1px solid rgba(255, 255, 255, 0.45); }
+.btn.ghost:hover { box-shadow: none; border-color: var(--white); }
+.btn.navy { background: var(--navy); color: var(--white); }
+.btn.line { background: transparent; color: var(--navy); border: 1px solid var(--line); }
+.hero-body { position: relative; z-index: 3; display: flex; flex-direction: column; gap: 22px; margin-top: 46px; }
+.hero .logo { width: min(100%, 540px); height: auto; display: block; }
+.hero h1 { font-size: clamp(2.4rem, 10vw, 4.6rem); line-height: 1.02; font-weight: 600; max-width: 14ch; }
+.hero h1 em { font-style: italic; background: var(--gold); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p.sub { color: #C9D8E8; max-width: 46ch; font-size: 1.08rem; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+.fx { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.fx-a { transform: translateY(calc(var(--sy, 0) * -0.14px)); }
+.fx-b { transform: translateY(calc(var(--sy, 0) * -0.06px)); }
+.bub { position: absolute; bottom: -70px; border-radius: 50%; border: 1px solid rgba(93, 189, 235, 0.55);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), rgba(93, 189, 235, 0.07) 62%);
+  animation: rise var(--t) linear var(--dl) infinite; }
+@keyframes rise { 0% { transform: translate3d(0, 0, 0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translate3d(var(--sx), -118vh, 0); opacity: 0; } }
+.sp { position: absolute; width: var(--s); height: var(--s); background: var(--gold);
+  clip-path: polygon(50% 0, 58% 38%, 100% 50%, 58% 62%, 50% 100%, 42% 62%, 0 50%, 42% 38%);
+  animation: tw 3.4s ease-in-out var(--dl) infinite; }
+@keyframes tw { 0%, 100% { opacity: 0.2; transform: scale(0.65); } 50% { opacity: 1; transform: scale(1); } }
+
+/* Bande de confiance */
+.trust { background: var(--navy); color: var(--white); }
+.trust ul { list-style: none; margin: 0; padding: 18px 0; display: grid; gap: 10px; }
+.trust li { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 0.95rem; }
+.trust li::before { content: ""; flex: none; width: 10px; height: 10px; background: var(--gold); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+@media (min-width: 760px) { .trust ul { grid-template-columns: repeat(3, 1fr); } }
+
+/* Sections */
+.sec { padding-block: clamp(52px, 9vw, 92px); scroll-margin-top: 8px; }
+.sec.white { background: var(--white); }
+.sec-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+.sec-head p { color: var(--muted); max-width: 60ch; }
+
+/* Forfaits */
+.plans { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 820px) { .plans { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.plan { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 26px 22px; display: flex; flex-direction: column; gap: 14px; position: relative; min-width: 0; }
+.plan.feat { background: var(--navy); color: var(--white); border-color: var(--navy); box-shadow: 0 18px 44px rgba(18, 35, 59, 0.22); }
+.plan.feat h3 { color: var(--white); }
+.plan .tag { align-self: flex-start; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 5px 11px; border-radius: 999px; background: var(--gold); color: var(--deep); }
+.plan .dur { color: var(--muted); font-size: 0.9rem; }
+.plan.feat .dur { color: #BFD0E3; }
+.plan ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+.plan li { display: grid; grid-template-columns: 18px 1fr; gap: 10px; font-size: 0.95rem; }
+.plan li::before { content: ""; width: 12px; height: 7px; margin-top: 6px; border-left: 2px solid #C9972F; border-bottom: 2px solid #C9972F; transform: rotate(-45deg); }
+.plan li.plus { font-weight: 700; }
+.plan .btn { margin-top: 8px; width: 100%; }
+
+/* Avant / après */
+.ba { position: relative; aspect-ratio: 4 / 3; max-width: 760px; margin-inline: auto; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--mist); user-select: none; }
+.ba:focus-within { outline: 3px solid var(--sky); outline-offset: 3px; }
+.ba .pane { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+.ba .after { background: radial-gradient(circle at 70% 25%, #FFFFFF 0, rgba(255, 255, 255, 0) 45%), linear-gradient(160deg, #EAF5FB, #CBE6F5); color: var(--navy); }
+.ba .before { background: radial-gradient(circle at 25% 70%, rgba(80, 70, 60, 0.35) 0, rgba(80, 70, 60, 0) 34%), radial-gradient(circle at 70% 35%, rgba(80, 70, 60, 0.28) 0, rgba(80, 70, 60, 0) 28%), linear-gradient(160deg, #B4B2AE, #8F8D89); color: #2B2926; clip-path: inset(0 50% 0 0); }
+.ba .ph { max-width: 14ch; font-size: 0.9rem; }
+.ba .after { justify-content: flex-end; padding-right: 9%; }
+.ba .before { justify-content: flex-start; padding-left: 9%; }
+.ba .ph strong { display: block; font-family: var(--serif); font-size: 1.5rem; }
+.ba .lab { position: absolute; top: 14px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 5px 11px; border-radius: 999px; background: rgba(18, 35, 59, 0.8); color: var(--white); z-index: 2; }
+.ba .lab.l { left: 14px; } .ba .lab.r { right: 14px; }
+.ba .handle { position: absolute; top: 0; bottom: 0; left: 50%; width: 3px; background: var(--white); z-index: 3; transform: translateX(-1.5px); box-shadow: 0 0 12px rgba(0, 0, 0, 0.3); }
+.ba .handle::after { content: "↔"; position: absolute; top: 50%; left: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; background: var(--white); color: var(--navy); display: grid; place-items: center; font-weight: 700; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3); }
+.ba input[type="range"] { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; z-index: 4; }
+.note { color: var(--muted); font-size: 0.85rem; text-align: center; margin-top: 12px; }
+
+/* Garantie */
+.guar { background: var(--deep); color: var(--white); border-radius: 20px; padding: clamp(26px, 6vw, 48px); display: grid; gap: 24px; align-items: center; position: relative; overflow: hidden; }
+.guar::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--gold); }
+@media (min-width: 760px) { .guar { grid-template-columns: 200px 1fr; } }
+.guar h2 { color: var(--white); }
+.guar .seal { width: 150px; height: 150px; margin-inline: auto; }
+.guar ul { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; color: #C9D8E8; }
+.guar li::before { content: "✦"; color: #E9C766; margin-right: 10px; }
+
+/* Calculateur */
+.calc { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 820px) { .calc { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.panel { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 24px 22px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.panel.navy { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line); background: var(--white); color: var(--navy); border-radius: 999px; padding: 9px 16px; font: inherit; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field > label, .field > .lbl { font-size: 0.82rem; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
+.field output { font-variant-numeric: lining-nums; font-family: var(--serif); font-size: 1.6rem; font-weight: 700; color: var(--navy); }
+input[type="range"].rng { width: 100%; accent-color: var(--navy); }
+.seg { display: inline-grid; grid-auto-flow: column; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; align-self: flex-start; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label { padding: 9px 20px; cursor: pointer; font-weight: 600; color: var(--navy); background: var(--white); }
+.seg input:checked + label { background: var(--navy); color: var(--white); }
+.seg input:focus-visible + label { outline: 3px solid var(--sky); outline-offset: -3px; }
+.chk { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--navy); }
+.chk input { width: 20px; height: 20px; accent-color: var(--navy); }
+dl.sum { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; font-variant-numeric: tabular-nums; }
+dl.sum dt { color: #BFD0E3; } dl.sum dd { margin: 0; text-align: right; font-weight: 600; }
+dl.sum .rule { grid-column: 1 / -1; height: 1px; background: rgba(255, 255, 255, 0.2); }
+dl.sum .tot { font-variant-numeric: lining-nums; font-family: var(--serif); font-size: 2.1rem; font-weight: 700; line-height: 1; }
+dl.sum dd.tot { background: var(--gold); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.panel.navy .small { color: #BFD0E3; font-size: 0.82rem; }
+
+/* Soumission */
+.quote { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 820px) { .quote { grid-template-columns: 1.1fr 0.9fr; } }
+.quote form { display: grid; gap: 14px; }
+.quote .field input, .quote .field select, .quote .field textarea { font: inherit; color: var(--ink); background: var(--white); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; width: 100%; }
+.quote textarea { min-height: 84px; resize: vertical; }
+.msg { width: 100%; min-height: 150px; font: inherit; border: 1px dashed #9CB4CC; border-radius: 10px; padding: 12px; background: var(--paper); color: var(--ink); resize: vertical; }
+.contact { display: grid; gap: 6px; }
+.contact b { color: var(--navy); }
+.ph-tag { background: var(--mist); border-radius: 6px; padding: 1px 8px; font-weight: 600; color: var(--navy); }
+
+footer { background: var(--deep); color: #BFD0E3; padding-block: 40px 56px; font-size: 0.9rem; }
+footer .brand { color: var(--white); margin-bottom: 8px; }
+footer .small { margin-top: 14px; font-size: 0.8rem; opacity: 0.8; }
+#toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--deep); color: var(--white); padding: 11px 18px; border-radius: 10px; z-index: 30; max-width: calc(100vw - 32px); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35); }
+
+/* Apparition douce au défilement */
+.rv { opacity: 0.22; transform: translateY(20px); transition: opacity .8s ease var(--d, 0s), transform .8s ease var(--d, 0s); }
+.rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rv { opacity: 1; transform: none; transition: none; }
+  .bub, .sp { animation: none; opacity: 0.5; }
+  .fx-a, .fx-b { transform: none; }
+  .btn { transition: none; }
+}
+</style>
+
+</head>
+<body>
+<header class="hero" id="haut">
+  <div class="fx fx-a" id="fxA" aria-hidden="true"></div>
+  <div class="fx fx-b" id="fxB" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="btn sm" href="#soumission" data-go="soumission">Demander une soumission</a>
+    </div>
+    <div class="hero-body">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 140" class="logo" role="img" aria-label="Maison Nette, ménage résidentiel"><defs><linearGradient id="rl47" gradientUnits="userSpaceOnUse" x1="140" y1="0" x2="600" y2="0"><stop offset="0" stop-color="#C99B35"/><stop offset="0.25" stop-color="#F8E1A0"/><stop offset="0.5" stop-color="#D9AE4C"/><stop offset="0.75" stop-color="#FFF0C0"/><stop offset="1" stop-color="#C99B35"/></linearGradient></defs><svg x="0" y="10" width="120" height="120" viewBox="0 0 120 120"><defs><linearGradient id="gf48" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="120" y2="120"><stop offset="0" stop-color="#C99B35"/><stop offset="0.25" stop-color="#F8E1A0"/><stop offset="0.5" stop-color="#D9AE4C"/><stop offset="0.75" stop-color="#FFF0C0"/><stop offset="1" stop-color="#C99B35"/></linearGradient></defs>
+<circle cx="60" cy="60" r="56.500" fill="none" stroke="#FFFFFF" stroke-width="1.500"/>
+<circle cx="60" cy="60" r="52.500" fill="none" stroke="url(#gf48)" stroke-width="1"/>
+<g transform="translate(0 4)">
+<path d="M26 62 60 31 94 62" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M33 62 60 38 87 62" fill="none" stroke="#5DBDEB" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M34 66V92H86V66" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M78 45V34H85V50" fill="none" stroke="#FFFFFF" stroke-width="2.16" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M52 92V79a8 8 0 0 1 16 0V92" fill="none" stroke="#FFFFFF" stroke-width="2.04" stroke-linejoin="round"/>
+<path d="M56 92V79.500a4 4 0 0 1 8 0V92" fill="#5DBDEB" fill-opacity=".25" stroke="#5DBDEB" stroke-width="1.100"/>
+<circle cx="62.500" cy="86" r="1" fill="url(#gf48)"/>
+<rect x="39" y="72" width="9" height="9" rx="1" fill="none" stroke="#FFFFFF" stroke-width="1.68"/><path d="M43.500 72v9M39 76.500h9" stroke="#5DBDEB" stroke-width="1"/>
+<rect x="72" y="72" width="9" height="9" rx="1" fill="none" stroke="#FFFFFF" stroke-width="1.68"/><path d="M76.500 72v9M72 76.500h9" stroke="#5DBDEB" stroke-width="1"/>
+<path d="M28 92H92" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+<circle cx="86" cy="28" r="2.200" fill="none" stroke="#5DBDEB" stroke-width="1.200"/><circle cx="91" cy="21.500" r="1.600" fill="none" stroke="#5DBDEB" stroke-width="1"/>
+<path d="M60 14c0.28 3.15 3.85 6.72 7 7c-3.15 0.28 -6.72 3.85 -7 7c-0.28 -3.15 -3.85 -6.72 -7 -7c3.15 -0.28 6.72 -3.85 7 -7z" fill="url(#gf48)"/></g></svg><text x="142" y="72" font-family="'Cormorant Garamond','Iowan Old Style',Georgia,serif" font-weight="700" font-size="46" letter-spacing="9" fill="#FFFFFF">MAISON NETTE</text><rect x="144" y="84" width="440" height="1.400" fill="url(#rl47)"/><text x="144" y="108" font-family="'Figtree',Arial,sans-serif" font-weight="600" font-size="13" letter-spacing="7" fill="#5DBDEB">MÉNAGE RÉSIDENTIEL</text></svg>
+      <span class="eyebrow">Ménage résidentiel · Joliette et Lanaudière</span>
+      <h1>Votre maison, nettoyée avec <em>précision.</em></h1>
+      <p class="sub">Un ménage en profondeur, pièce par pièce, selon une checklist précise. Produits et équipement fournis.</p>
+      <div class="cta-row">
+        <a class="btn" href="#soumission" data-go="soumission">Demander une soumission</a>
+        <a class="btn ghost" href="#forfaits" data-go="forfaits">Voir les forfaits</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="trust">
+  <div class="wrap">
+    <ul>
+      <li>Checklist pièce par pièce</li>
+      <li>Produits et équipement fournis</li>
+      <li>Inspection finale avec vous</li>
+    </ul>
+  </div>
+</div>
+
+<section class="sec" id="forfaits">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Forfaits</span>
+      <h2>Trois façons de prendre soin de votre maison</h2>
+      <div class="gold-rule"></div>
+      <p>Chaque ménage suit la même checklist, pièce par pièce. Les durées sont des repères provisoires. Le prix exact dépend de la grandeur et de l'état de la maison.</p>
+    </div>
+    <div class="plans">
+      <article class="plan rv">
+        <h3>Entretien</h3>
+        <p class="dur">Durée type : 3 h <span class="ph-tag">provisoire</span></p>
+        <ul>
+          <li>Comptoirs, évier et robinetterie</li>
+          <li>Salles de bain désinfectées</li>
+          <li>Planchers aspirés et lavés</li>
+          <li>Surfaces dépoussiérées</li>
+          <li>Poubelles vidées</li>
+        </ul>
+        <button class="btn line" type="button" data-plan="entretien">Calculer le prix</button>
+      </article>
+      <article class="plan feat rv" style="--d:.1s">
+        <span class="tag">Recommandé pour débuter</span>
+        <h3>En profondeur</h3>
+        <p class="dur">Durée type : 5 h <span class="ph-tag">provisoire</span></p>
+        <ul>
+          <li>Tout le forfait Entretien</li>
+          <li class="plus">Intérieur du four et du frigo</li>
+          <li class="plus">Hotte et filtre dégraissés</li>
+          <li class="plus">Joints et calcaire</li>
+          <li class="plus">Plinthes et cadres de porte</li>
+        </ul>
+        <button class="btn" type="button" data-plan="profond">Calculer le prix</button>
+      </article>
+      <article class="plan rv" style="--d:.2s">
+        <h3>Grand ménage</h3>
+        <p class="dur">Durée type : 8 h <span class="ph-tag">provisoire</span></p>
+        <ul>
+          <li>Tout le forfait En profondeur</li>
+          <li class="plus">Dessus des armoires et luminaires</li>
+          <li class="plus">Fenêtres, rebords et rails</li>
+          <li class="plus">Murs, stores et rideaux dépoussiérés</li>
+          <li class="plus">Intérieur des garde-robes</li>
+        </ul>
+        <button class="btn line" type="button" data-plan="grand">Calculer le prix</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sec white" id="avant-apres">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Avant et après</span>
+      <h2>Glissez pour voir la différence</h2>
+      <div class="gold-rule"></div>
+    </div>
+    <div class="ba rv" id="ba">
+      <div class="pane after"><div class="ph"><strong>Après</strong>Photo à venir</div></div>
+      <div class="pane before" id="baBefore"><div class="ph"><strong>Avant</strong>Photo à venir</div></div>
+      <span class="lab l">Avant</span><span class="lab r">Après</span>
+      <div class="handle" id="baHandle"></div>
+      <input type="range" id="baRange" min="0" max="100" value="50" aria-label="Comparer l'avant et l'après">
+    </div>
+    <p class="note">Exemple provisoire : de vraies photos de nettoyage remplaceront ces espaces réservés.</p>
+  </div>
+</section>
+
+<section class="sec" id="garantie">
+  <div class="wrap">
+    <div class="guar rv">
+      <svg class="seal" viewBox="0 0 120 120" role="img" aria-label="Sceau de garantie">
+        <defs><linearGradient id="gs" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="120" y2="120"><stop offset="0" stop-color="#C99B35"/><stop offset=".25" stop-color="#F8E1A0"/><stop offset=".5" stop-color="#D9AE4C"/><stop offset=".75" stop-color="#FFF0C0"/><stop offset="1" stop-color="#C99B35"/></linearGradient></defs>
+        <circle cx="60" cy="60" r="57" fill="none" stroke="url(#gs)" stroke-width="2.4"/>
+        <circle cx="60" cy="60" r="51" fill="none" stroke="url(#gs)" stroke-width=".9"/>
+        <text x="60" y="52" text-anchor="middle" font-family="'Cormorant Garamond',Georgia,serif" font-weight="700" font-size="30" fill="#FFFFFF">24 h</text>
+        <path d="M34 62H86" stroke="url(#gs)" stroke-width="1"/>
+        <text x="60" y="80" text-anchor="middle" font-family="'Figtree',Arial,sans-serif" font-weight="700" font-size="9.5" letter-spacing="2.6" fill="#5DBDEB">GARANTIE</text>
+      </svg>
+      <div>
+        <span class="eyebrow">Ma garantie</span>
+        <h2>Pas satisfait ? Je reviens corriger, sans frais.</h2>
+        <ul>
+          <li>Vous me signalez ce qui ne va pas.</li>
+          <li>Je reviens le corriger gratuitement dans les 24 heures.</li>
+          <li>Les conditions précises restent à confirmer <span class="ph-tag" style="color:#12233B">provisoire</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec white" id="prix">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Estimation</span>
+      <h2>Calculez le prix de votre ménage</h2>
+      <div class="gold-rule"></div>
+      <p>Choisissez un forfait, ajustez la durée, et voyez le prix avec les taxes. C'est une estimation, la soumission confirme le prix final.</p>
+    </div>
+    <div class="calc">
+      <div class="panel rv">
+        <div class="field">
+          <span class="lbl">Forfait</span>
+          <div class="chips" id="plans">
+            <button class="chip" type="button" data-plan="entretien" aria-pressed="false">Entretien</button>
+            <button class="chip" type="button" data-plan="profond" aria-pressed="true">En profondeur</button>
+            <button class="chip" type="button" data-plan="grand" aria-pressed="false">Grand ménage</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="hours">Durée estimée</label>
+          <output id="hoursOut" for="hours">5 h</output>
+          <input class="rng" type="range" id="hours" min="2" max="10" step="0.5" value="5">
+        </div>
+        <div class="field">
+          <span class="lbl" id="ppl">Nombre de personnes</span>
+          <div class="seg" role="radiogroup" aria-labelledby="ppl">
+            <input type="radio" name="people" id="p1" value="1" checked><label for="p1">1</label>
+            <input type="radio" name="people" id="p2" value="2"><label for="p2">2</label>
+            <input type="radio" name="people" id="p3" value="3"><label for="p3">3</label>
+          </div>
+        </div>
+        <label class="chk" for="tax"><input type="checkbox" id="tax" checked> Inclure la TPS et la TVQ</label>
+      </div>
+      <div class="panel navy rv" style="--d:.1s">
+        <h3>Votre estimation</h3>
+        <dl class="sum" id="sum"></dl>
+        <p class="small">Taux provisoire de <span id="rateTxt"></span> $ l'heure par personne, à confirmer. Produits et équipement inclus. Prix final selon la grandeur et l'état de la maison.</p>
+        <a class="btn" href="#soumission" data-go="soumission">Demander ma soumission</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="soumission">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Soumission</span>
+      <h2>Demandez votre soumission</h2>
+      <div class="gold-rule"></div>
+      <p>Remplissez les champs pour préparer votre message, puis envoyez-le par courriel ou par téléphone. Cette page n'envoie rien toute seule.</p>
+    </div>
+    <div class="quote">
+      <form id="qf" class="panel rv" novalidate>
+        <div class="field"><label for="q-nom">Prénom</label><input id="q-nom" type="text" autocomplete="given-name"></div>
+        <div class="field"><label for="q-ville">Ville ou secteur</label><input id="q-ville" type="text" placeholder="Ex. : Joliette, Saint-Charles-Borromée" autocomplete="address-level2"></div>
+        <div class="field"><label for="q-svc">Forfait souhaité</label>
+          <select id="q-svc"><option>Entretien</option><option selected>En profondeur</option><option>Grand ménage</option><option>Je ne sais pas encore</option></select></div>
+        <div class="field"><label for="q-date">Date souhaitée</label><input id="q-date" type="text" placeholder="Ex. : un samedi de novembre"></div>
+        <div class="field"><label for="q-det">Détails (grandeur, animaux, demandes)</label><textarea id="q-det"></textarea></div>
+        <button class="btn navy" type="submit">Préparer mon message</button>
+      </form>
+      <div class="panel rv" style="--d:.1s">
+        <h3>Votre message</h3>
+        <textarea class="msg" id="msg" readonly aria-label="Message préparé" placeholder="Votre message apparaîtra ici."></textarea>
+        <button class="btn line" type="button" id="copy" disabled>Copier le message</button>
+        <div class="contact">
+          <span>Envoyez-le à :</span>
+          <span><b>Courriel :</b> <span class="ph-tag">à venir</span></span>
+          <span><b>Téléphone :</b> <span class="ph-tag">à venir</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">MAISON NETTE</div>
+    <div>Ménage résidentiel en profondeur · Joliette et Lanaudière</div>
+    <div class="small">Site provisoire : les coordonnées, les tarifs, les conditions de la garantie et les photos sont à confirmer.</div>
+  </div>
+</footer>
+<div id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  var RATE = 55; /* $ / h par personne, provisoire */
+  var PLANS = { entretien: { h: 3, name: "Entretien" }, profond: { h: 5, name: "En profondeur" }, grand: { h: 8, name: "Grand ménage" } };
+  var $ = function (s) { return document.querySelector(s); };
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var fmt = new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD" });
+  var hrFmt = function (h) { return String(h).replace(".", ",") + " h"; };
+
+  /* Bulles et étincelles */
+  var fa = $("#fxA"), fb = $("#fxB"), i, e;
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  var count = reduce ? 8 : 16;
+  for (i = 0; i < count; i++) {
+    e = document.createElement("span"); e.className = "bub";
+    var s = rnd(8, 38);
+    e.style.cssText = "width:" + s + "px;height:" + s + "px;left:" + rnd(2, 96) + "%;--t:" + rnd(10, 20) + "s;--dl:-" + rnd(0, 18) + "s;--sx:" + rnd(-40, 40) + "px";
+    fa.appendChild(e);
+  }
+  for (i = 0; i < 9; i++) {
+    e = document.createElement("span"); e.className = "sp";
+    e.style.cssText = "--s:" + rnd(8, 18) + "px;left:" + rnd(4, 94) + "%;top:" + rnd(6, 88) + "%;--dl:-" + rnd(0, 3) + "s";
+    fb.appendChild(e);
+  }
+
+  /* Effet de profondeur léger */
+  if (!reduce) {
+    var ticking = false;
+    window.addEventListener("scroll", function () {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(function () { document.documentElement.style.setProperty("--sy", Math.min(window.scrollY, 900)); ticking = false; });
+    }, { passive: true });
+  }
+
+  /* Apparition au défilement */
+  var rv = document.querySelectorAll(".rv");
+  if ("IntersectionObserver" in window && !reduce) {
+    var io = new IntersectionObserver(function (en) { en.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add("in"); io.unobserve(x.target); } }); }, { threshold: 0.12 });
+    rv.forEach(function (x) { io.observe(x); });
+  } else { rv.forEach(function (x) { x.classList.add("in"); }); }
+
+  /* Navigation douce */
+  function go(id) { var t = document.getElementById(id); if (t) t.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); }
+  document.querySelectorAll("[data-go]").forEach(function (a) { a.addEventListener("click", function (ev) { ev.preventDefault(); go(a.dataset.go); }); });
+
+  /* Avant / après */
+  var range = $("#baRange"), before = $("#baBefore"), handle = $("#baHandle");
+  function setBA() { var v = range.value; before.style.clipPath = "inset(0 " + (100 - v) + "% 0 0)"; handle.style.left = v + "%"; }
+  range.addEventListener("input", setBA); setBA();
+
+  /* Calculateur */
+  var hours = $("#hours"), chips = document.querySelectorAll("#plans .chip");
+  $("#rateTxt").textContent = String(RATE).replace(".", ",");
+  function ppl() { return +document.querySelector("input[name=people]:checked").value; }
+  function calc() {
+    var h = +hours.value, p = ppl(), tax = $("#tax").checked;
+    var work = RATE * h * p, tps = tax ? work * 0.05 : 0, tvq = tax ? work * 0.09975 : 0, total = work + tps + tvq;
+    $("#hoursOut").textContent = hrFmt(h);
+    function row(k, v, cls) { return "<dt>" + k + "</dt><dd" + (cls ? ' class="' + cls + '"' : "") + ">" + v + "</dd>"; }
+    $("#sum").innerHTML = row("Main-d'œuvre (" + hrFmt(h) + " × " + p + ")", fmt.format(work)) + row("Produits et équipement", "inclus") + (tax ? row("TPS (5 %)", fmt.format(tps)) + row("TVQ (9,975 %)", fmt.format(tvq)) : "") + '<span class="rule"></span><dt>Total estimé</dt>' + '<dd class="tot">' + fmt.format(total) + "</dd>";
+  }
+  function plan(k) {
+    hours.value = PLANS[k].h;
+    chips.forEach(function (c) { c.setAttribute("aria-pressed", String(c.dataset.plan === k)); });
+    var sel = $("#q-svc"); for (var j = 0; j < sel.options.length; j++) if (sel.options[j].text === PLANS[k].name) sel.selectedIndex = j;
+    calc();
+  }
+  chips.forEach(function (c) { c.addEventListener("click", function () { plan(c.dataset.plan); }); });
+  document.querySelectorAll(".plan [data-plan]").forEach(function (b) { b.addEventListener("click", function () { plan(b.dataset.plan); go("prix"); }); });
+  hours.addEventListener("input", function () { chips.forEach(function (c) { c.setAttribute("aria-pressed", "false"); }); calc(); });
+  document.querySelectorAll("input[name=people]").forEach(function (r) { r.addEventListener("change", calc); });
+  $("#tax").addEventListener("change", calc);
+  calc();
+
+  /* Message de soumission */
+  function toast(m) { var t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { t.hidden = true; }, 3500); }
+  $("#qf").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var nom = $("#q-nom").value.trim(), ville = $("#q-ville").value.trim(), svc = $("#q-svc").value, date = $("#q-date").value.trim(), det = $("#q-det").value.trim();
+    var m = "Bonjour,\n\nJe souhaite une soumission pour un ménage « " + svc + " »" + (ville ? " à " + ville : "") + ".";
+    if (date) m += "\nDate souhaitée : " + date + ".";
+    if (det) m += "\nDétails : " + det;
+    m += "\n\nMerci" + (nom ? ",\n" + nom : "!");
+    $("#msg").value = m; $("#copy").disabled = false;
+  });
+  $("#copy").addEventListener("click", function () {
+    var ta = $("#msg"), done = function () { toast("Message copié"); };
+    function fallback() { ta.focus(); ta.select(); toast("Sélectionné : copiez avec Ctrl+C ou Cmd+C"); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(done, fallback); else fallback();
+  });
+})();
+</script>
+
+</body></html>
